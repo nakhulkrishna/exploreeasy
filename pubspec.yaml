@@ -57,8 +57,7 @@ dependencies:
   permission_handler: ^11.3.1
   url_launcher: ^6.3.0
   flutter_expandable_text: ^1.0.0
-  packages_info_android: ^0.0.1-dev.1
-  packages_info: ^0.0.1-dev.1
+
 
 dev_dependencies:
   flutter_test:
