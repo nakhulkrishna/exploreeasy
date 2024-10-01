@@ -191,27 +191,6 @@ class _RecentTripssState extends State<RecentTripss> {
                                       ),
                                     ),
                                     const SizedBox(width: 10),
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                        borderRadius:
-                                            BorderRadiusDirectional.all(
-                                          Radius.circular(10),
-                                        ),
-                                        color: AppColors.offblue,
-                                      ),
-                                      width: 100,
-                                      height: 30,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Icon(CupertinoIcons.bag),
-                                          Text(" ${data.contacts} Bags"),
-                                        ],
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ],

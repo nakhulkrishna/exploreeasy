@@ -2,12 +2,15 @@ import 'package:exploreesy/db/db_servies/dayplaner_servies.dart';
 import 'package:exploreesy/db/model/Day_planner.dart';
 import 'package:exploreesy/db/model/TripModel.dart';
 import 'package:exploreesy/src/utils/colors.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart'; // Import the intl package
 
 class DayplanerViwer extends StatefulWidget {
   final TripModel tripdata;
   final int index;
+
   const DayplanerViwer(
       {super.key, required this.tripdata, required this.index});
 
@@ -20,6 +23,14 @@ class _DayplanerViwerState extends State<DayplanerViwer> {
   void initState() {
     super.initState();
     getPlans(widget.tripdata.id, widget.index);
+  }
+
+  String formatTime(DateTime time) {
+    return DateFormat('kk:mm').format(time); // Format for 24-hour format
+  }
+
+  String formatDate(DateTime date) {
+    return DateFormat('MMM d, yyyy').format(date); // Format for date
   }
 
   @override
@@ -87,22 +98,25 @@ class _DayplanerViwerState extends State<DayplanerViwer> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "From: ${dayPlan.formTime}",
+                                  "From: ${formatTime(dayPlan.formTime)}", // Format fromTime
                                   style: TextStyle(color: Colors.black54),
                                 ),
                                 Text(
-                                  "To: ${dayPlan.toTime}",
+                                  "To: ${formatTime(dayPlan.toTime)}", // Format toTime
                                   style: TextStyle(color: Colors.black54),
                                 ),
                                 Text(
-                                  "Date: ${dayPlan.date}",
+                                  "Date: ${formatDate(dayPlan.date)}", // Format date
                                   style: TextStyle(color: Colors.black54),
                                 ),
                               ],
                             ),
-                            Icon(Icons.delete,
-                                color:
-                                    AppColors.darkRed), // Add an icon if needed
+                            IconButton(
+                              onPressed: () {
+                                deletePlans(dayPlan.id);
+                              },
+                              icon: Icon(CupertinoIcons.delete),
+                            ), // Add an icon if needed
                           ],
                         ),
                       ],

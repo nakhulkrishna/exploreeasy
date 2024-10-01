@@ -22,18 +22,19 @@ class DayPlanModelAdapter extends TypeAdapter<DayPlanModel> {
       toTime: fields[5] as DateTime,
       description: fields[6] as String?,
       indexofday: fields[3] as int,
-      id: fields[0] as String,
+      Tripid: fields[0] as String,
       plansName: fields[1] as String?,
       date: fields[2] as DateTime,
+      id: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DayPlanModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
-      ..write(obj.id)
+      ..write(obj.Tripid)
       ..writeByte(1)
       ..write(obj.plansName)
       ..writeByte(2)
@@ -47,7 +48,9 @@ class DayPlanModelAdapter extends TypeAdapter<DayPlanModel> {
       ..writeByte(6)
       ..write(obj.description)
       ..writeByte(7)
-      ..write(obj.transportaion);
+      ..write(obj.transportaion)
+      ..writeByte(8)
+      ..write(obj.id);
   }
 
   @override

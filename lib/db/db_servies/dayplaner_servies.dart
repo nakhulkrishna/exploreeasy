@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:exploreesy/db/model/Day_planner.dart';
+import 'package:exploreesy/db/model/expenseModel.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -8,7 +9,7 @@ ValueNotifier<List<DayPlanModel>> plansListNotifier = ValueNotifier([]);
 Future<void> addDailyPlan(DayPlanModel value) async {
   final dailyPlanDB = await Hive.openBox("DailyPlan_DB");
 
-  await dailyPlanDB.add(value);
+  await dailyPlanDB.put(value.id, value);
   log(
     """
     Added Daily Plan:
@@ -17,6 +18,8 @@ Future<void> addDailyPlan(DayPlanModel value) async {
     - Description: ${value.description}
     - From Time: ${value.formTime}
     - To Time: ${value.toTime}
+    - Dayplan id :  ${value.id}
+
     """,
     name: 'Daily Plan Logger',
   );
@@ -32,10 +35,32 @@ Future<void> getPlans(String tripId, int indexOfDay) async {
 
   // Filter the plans by tripId and indexOfDay
   List<DayPlanModel> filteredPlans = allPlans.where((plan) {
-    return plan.id == tripId && plan.indexofday == indexOfDay;
+    return plan.Tripid == tripId && plan.indexofday == indexOfDay;
   }).toList();
 
   // Update the notifier list with the filtered plans
   plansListNotifier.value = filteredPlans;
   plansListNotifier.notifyListeners();
+}
+
+Future<void> deletePlans(String DayplanId) async {
+  final dailyPlanDB = await Hive.openBox("DailyPlan_DB");
+
+  // Log current keys before checking
+  log('Current Daily Plans Keys: ${dailyPlanDB.keys.toList()}',
+      name: 'Daily Plan Logger');
+
+  // Check if the plan exists before attempting to delete
+  final exists = dailyPlanDB.containsKey(DayplanId);
+
+  if (exists) {
+    await dailyPlanDB.delete(DayplanId);
+    log('Deleted Daily Plan with ID: $DayplanId', name: 'Daily Plan Logger');
+  } else {
+    log('No Daily Plan found with ID: $DayplanId', name: 'Daily Plan Logger');
+  }
+
+  // Optional: Log the current state of the database
+  log('Current Daily Plans: ${dailyPlanDB.keys.toList()}',
+      name: 'Daily Plan Logger');
 }

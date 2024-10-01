@@ -17,8 +17,10 @@ class ExpenseModel {
 
   @HiveField(3)
   String id;
-
+  @HiveField(4)
+  final DateTime addedTime;
   ExpenseModel({
+    required this.addedTime,
     required this.itemName,
     required this.amount,
     required this.tripId,
@@ -29,11 +31,13 @@ class ExpenseModel {
     double? amount,
     String? tripId,
     String? id,
+    DateTime? addedTime,
   }) {
     return ExpenseModel(
       itemName: itemName ?? this.itemName,
       amount: amount ?? this.amount,
       tripId: tripId ?? this.tripId,
+      addedTime: addedTime ?? this.addedTime,
     )..id = id ?? this.id; // Note: You may need to set id separately
   }
 }

@@ -5,13 +5,14 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:exploreesy/src/utils/widgets/custome_button.dart';
 import 'package:exploreesy/src/utils/colors.dart';
-
 import 'package:exploreesy/db/model/expenseModel.dart';
+import 'package:intl/intl.dart';
 
 void showBudgetModalSheet(
     BuildContext context, double initialBudget, String tripId) {
   final TextEditingController _itemNameController = TextEditingController();
   final TextEditingController _itemAmountController = TextEditingController();
+  final GlobalKey<FormState> _expenseformKey = GlobalKey<FormState>();
 
   double calculateTotalAmountUsed(List<ExpenseModel> expenses, String tripId) {
     return expenses
@@ -45,7 +46,7 @@ void showBudgetModalSheet(
                 children: [
                   Text(
                     "Set your Trip Budget",
-                    style: GoogleFonts.ptSerif(fontSize: 20),
+                    style: GoogleFonts.roboto(fontSize: 20),
                   ),
                   const SizedBox(height: 10),
                   Container(
@@ -59,19 +60,19 @@ void showBudgetModalSheet(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Total Budget: ${initialBudget.toStringAsFixed(2)}",
-                          style: GoogleFonts.ptSerif(
+                          "Total Budget: ₹ ${initialBudget.toStringAsFixed(2)}",
+                          style: GoogleFonts.roboto(
                             fontSize: 20,
                             color: AppColors.red,
                           ),
                         ),
                         Text(
-                          "Total Amount Used: ${totalAmountUsed.toStringAsFixed(2)}",
-                          style: GoogleFonts.ptSerif(color: Colors.black),
+                          "Total Amount Used: ₹ ${totalAmountUsed.toStringAsFixed(2)}",
+                          style: GoogleFonts.roboto(color: Colors.black),
                         ),
                         Text(
-                          "Remaining Budget: ${remainingBudget.toStringAsFixed(2)}",
-                          style: GoogleFonts.ptSerif(color: Colors.black),
+                          "Remaining Budget: ₹ ${remainingBudget.toStringAsFixed(2)}",
+                          style: GoogleFonts.roboto(color: Colors.black),
                         ),
                       ],
                     ),
@@ -85,48 +86,75 @@ void showBudgetModalSheet(
                               Text("Add Items", style: GoogleFonts.ptSerif()),
                           content: SizedBox(
                             height: 200,
-                            child: Column(
-                              children: [
-                                TextField(
-                                  controller: _itemNameController,
-                                  decoration: const InputDecoration(
-                                    label: Text("Item Name"),
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                            child: Form(
+                              key: _expenseformKey,
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return 'Please enter an item name';
+                                      }
+                                      return null; // Valid input
+                                    },
+                                    controller: _itemNameController,
+                                    decoration: const InputDecoration(
+                                      label: Text("Item Name"),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10)),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-                                TextField(
-                                  controller: _itemAmountController,
-                                  keyboardType: TextInputType.number,
-                                  decoration: const InputDecoration(
-                                    label: Text("Item Amount"),
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                                  const SizedBox(height: 10),
+                                  TextFormField(
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return 'Please enter an amount';
+                                      }
+                                      final amount = double.tryParse(value);
+                                      if (amount == null || amount <= 0) {
+                                        return 'Please enter a valid amount';
+                                      }
+                                      return null; // Valid input
+                                    },
+                                    controller: _itemAmountController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      label: Text("Item Amount"),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10)),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-                                Custome_Button(
-                                  onpresed: () {
-                                    final double amount = double.parse(
-                                        _itemAmountController.text);
-                                    final addExpenseList = ExpenseModel(
-                                        tripId: tripId,
-                                        itemName: _itemNameController.text,
-                                        amount: amount);
+                                  const SizedBox(height: 10),
+                                  Custome_Button(
+                                    onpresed: () {
+                                      if (_expenseformKey.currentState!
+                                          .validate()) {
+                                        final double amount = double.parse(
+                                            _itemAmountController.text.trim());
+                                        final addExpenseList = ExpenseModel(
+                                            tripId: tripId,
+                                            itemName:
+                                                _itemNameController.text.trim(),
+                                            amount: amount,
+                                            addedTime: DateTime.now());
 
-                                    addExpense(addExpenseList);
+                                        addExpense(addExpenseList);
 
-                                    Navigator.pop(context); // Close the dialog
-                                  },
-                                  text: "Continue",
-                                  height: 40,
-                                ),
-                              ],
+                                        Navigator.pop(
+                                            context); // Close the dialog
+                                      }
+                                    },
+                                    text: "Continue",
+                                    height: 40,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -250,13 +278,15 @@ void showBudgetModalSheet(
                                   ],
                                 ),
                                 child: ListTile(
+                                  subtitle: Text(DateFormat('MMM dd HH:mm')
+                                      .format(data.addedTime)),
                                   title: Text(
                                     data.itemName,
-                                    style: GoogleFonts.ptSerif(fontSize: 20),
+                                    style: GoogleFonts.roboto(fontSize: 20),
                                   ),
                                   trailing: Text(
-                                    data.amount.toStringAsFixed(2),
-                                    style: GoogleFonts.ptSerif(
+                                    " ₹ ${data.amount.toStringAsFixed(2)}",
+                                    style: GoogleFonts.roboto(
                                         fontSize: 20, color: Colors.green),
                                   ),
                                 ),

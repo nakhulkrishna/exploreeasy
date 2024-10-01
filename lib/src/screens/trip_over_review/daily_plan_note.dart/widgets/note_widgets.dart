@@ -87,7 +87,7 @@ class _NoteWidgetsState extends State<NoteWidgets> {
                 }
 
                 // Validate time logic
-                if (!toTime.isAfter(fromTime)) {
+                if (!toTime.isBefore(fromTime)) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("To time must be after From time.")),
                   );
@@ -100,16 +100,15 @@ class _NoteWidgetsState extends State<NoteWidgets> {
                   toTime: toTime,
                   description: _description.text,
                   indexofday: widget.indexofday,
-                  id: widget.tripdata.id,
+                  Tripid: widget.tripdata.id,
                   plansName: _activityController.text,
                   date: DateTime.now(),
                 );
 
                 addDailyPlan(data);
                 // Optionally, navigate back or show a success message here
+                Navigator.of(context).pop();
               }
-
-              Navigator.of(context).pop();
             },
             child: Text(
               "Save",
