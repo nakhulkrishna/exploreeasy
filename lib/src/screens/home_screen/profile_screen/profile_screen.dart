@@ -1,24 +1,16 @@
 import 'dart:io';
-import 'dart:math';
-import 'package:exploreesy/db/db_servies/db_servies.dart';
 import 'package:exploreesy/db/db_servies/user_db_servies.dart';
-import 'package:exploreesy/db/db_servies/user_memories_db.dart';
 import 'package:exploreesy/db/model/TripModel.dart';
 import 'package:exploreesy/db/model/userModel.dart';
-import 'package:exploreesy/db/model/user_memories_Model.dart';
 import 'package:exploreesy/src/screens/settings/Help_screen.dart';
 import 'package:exploreesy/src/screens/settings/Terms_screen.dart';
 import 'package:exploreesy/src/screens/settings/about_us_screen.dart';
 import 'package:exploreesy/src/screens/settings/privacy_screen.dart';
 import 'package:exploreesy/src/utils/widgets/ettings_container.dart';
 import 'package:exploreesy/src/screens/onboarding/Profile_creating/profile_creating.dart'; // Onboarding screen
-import 'package:exploreesy/src/utils/colors.dart';
 import 'package:exploreesy/src/utils/widgets/custome_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

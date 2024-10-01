@@ -4,8 +4,10 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:exploreesy/db/db_servies/db_servies.dart';
 import 'package:exploreesy/db/model/TripModel.dart';
 import 'package:exploreesy/src/utils/colors.dart';
+import 'package:exploreesy/src/utils/widgets/addtripForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -27,10 +29,11 @@ class _AddTripScreenState extends State<AddTripScreen> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
   final TextEditingController _travelersController = TextEditingController();
-  final TextEditingController _bagsController = TextEditingController();
   final TextEditingController _amountTotal = TextEditingController();
   final TextEditingController _accommodationController =
       TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final List<XFile> _imageFiles = []; // List to store selected images
 
   final ImagePicker _picker = ImagePicker();
@@ -124,359 +127,408 @@ class _AddTripScreenState extends State<AddTripScreen> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Plan Your Next Adventure",
-                  style: GoogleFonts.ptSerif(fontSize: 20),
-                ),
-                Text(
-                  "Enter your destination, dates, and other details to start planning your trip.",
-                  style: GoogleFonts.ptSerif(color: AppColors.gray),
-                ),
-                const SizedBox(height: 15),
-                // Destination
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.placemark,
-                        color: AppColors.darkBlue, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Destination",
-                      style: GoogleFonts.ptSerif(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.darkBlue),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                TextField(
-                  controller: _tripNameController,
-                  decoration: InputDecoration(
-                    hintText: "e.g., Paris, New York",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Plan Your Next Adventure",
+                    style: GoogleFonts.ptSerif(fontSize: 20),
                   ),
-                ),
-                const SizedBox(height: 10),
-                // Start Date
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.calendar,
-                        color: AppColors.darkBlue, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Start date",
-                      style: GoogleFonts.ptSerif(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.darkBlue),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  onTap: () => _selectDate(
-                      context, _startDateController, null, DateTime.now()),
-                  controller: _startDateController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: "e.g., 2024-09-10",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                  Text(
+                    "Enter your destination, dates, and other details to start planning your trip.",
+                    style: GoogleFonts.ptSerif(color: AppColors.gray),
                   ),
-                ),
+                  const SizedBox(height: 15),
+                  // Destination
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.placemark,
+                          color: AppColors.darkBlue, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Destination",
+                        style: GoogleFonts.ptSerif(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkBlue),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  AddTripForm(
+                      keyboardType: TextInputType.name,
+                      controller: _tripNameController,
+                      validator: (value) {
+                        bool isAlphabetic(String value) {
+                          final RegExp alphabeticRegExp =
+                              RegExp(r'^[a-zA-Z\s]+$');
+                          return alphabeticRegExp.hasMatch(value);
+                        }
 
-                const SizedBox(height: 10),
-                // End Date
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.calendar,
-                        color: AppColors.darkBlue, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      "End date",
-                      style: GoogleFonts.ptSerif(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.darkBlue),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  onTap: () {
-                    final startDate =
-                        DateTime.tryParse(_startDateController.text);
-                    _selectDate(
-                        context,
-                        _endDateController,
-                        startDate, // Ensure end date is after start date
-                        DateTime.now());
-                  },
-                  controller: _endDateController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: "e.g., 2024-09-10",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                        if (value == null || value.trim().isEmpty) {
+                          return "Trip name is required";
+                        } else if (!isAlphabetic(value)) {
+                          return "Trip name is always  alphabetic";
+                        } else if (value.trim().length < 3 ||
+                            value.trim().isEmpty) {
+                          return "Trip name should be at least 3 characters long";
+                        }
+                        return null;
+                      },
+                      hintText: "e.g, Paris or Canada"),
+                  const SizedBox(height: 10),
+                  // Start Date
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.calendar,
+                          color: AppColors.darkBlue, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Start date",
+                        style: GoogleFonts.ptSerif(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkBlue),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    onTap: () => _selectDate(
+                        context, _startDateController, null, DateTime.now()),
+                    controller: _startDateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      hintText: "e.g., 2024-09-10",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 10),
-                // Travelers
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.person,
-                        color: AppColors.darkBlue, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Travelers",
-                      style: GoogleFonts.ptSerif(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.darkBlue),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _travelersController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: "e.g., 2",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                  const SizedBox(height: 10),
+                  // End Date
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.calendar,
+                          color: AppColors.darkBlue, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        "End date",
+                        style: GoogleFonts.ptSerif(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkBlue),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    onTap: () {
+                      final startDate =
+                          DateTime.tryParse(_startDateController.text);
+                      _selectDate(
+                          context,
+                          _endDateController,
+                          startDate, // Ensure end date is after start date
+                          DateTime.now());
+                    },
+                    controller: _endDateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      hintText: "e.g., 2024-09-10",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                // Accommodation
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.building_2_fill,
-                        color: AppColors.darkBlue, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Accommodation",
-                      style: GoogleFonts.ptSerif(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.darkBlue),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _accommodationController,
-                  decoration: InputDecoration(
-                    hintText: "e.g., Hotel, Hostel, Airbnb",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                // Bags
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.phone,
-                        color: AppColors.darkBlue, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Partners Phone Number",
-                      style: GoogleFonts.ptSerif(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.darkBlue),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
 
-                ElevatedButton(
-                  onPressed: contacts,
-                  child: const Text("Add Contacts"),
-                ),
-                // TextField(
-                //   controller: _bagsController,
-                //   decoration: InputDecoration(
-                //     hintText: "e.g., 2",
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(10),
-                //     ),
-                //   ),
-                // ),
-                if (_isSelectedContacts.isNotEmpty)
-                  Column(
-                    children: _isSelectedContacts.map((contact) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 16),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        elevation: 4,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.blueAccent,
-                            child: Icon(
-                              Icons.person,
-                              color: Colors.white,
+                  const SizedBox(height: 10),
+                  // Travelers
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.person,
+                          color: AppColors.darkBlue, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Travelers",
+                        style: GoogleFonts.ptSerif(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkBlue),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  AddTripForm(
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      bool isNumeric(String value) {
+                        final RegExp numericRegExp = RegExp(r'^\d+$');
+                        return numericRegExp.hasMatch(value);
+                      }
+
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter the number of travelers';
+                      } else if (!isNumeric(value)) {
+                        return 'Please enter a valid number of travelers';
+                      } else if (double.parse(value) <= 0) {
+                        return "Please enter valid number of travel at least 1 person";
+                      }
+                      return null;
+                    },
+                    controller: _travelersController,
+                    hintText: "e.g, 2",
+                  ),
+                  const SizedBox(height: 10),
+                  // Accommodation
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.building_2_fill,
+                          color: AppColors.darkBlue, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Accommodation",
+                        style: GoogleFonts.ptSerif(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkBlue),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  AddTripForm(
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      bool isAlphabetic(String value) {
+                        final RegExp alphabeticRegExp =
+                            RegExp(r'^[a-zA-Z\s]+$');
+                        return alphabeticRegExp.hasMatch(value);
+                      }
+
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter the accommodation type';
+                      } else if (!isAlphabetic(value)) {
+                        return 'Please enter a valid accommodation type';
+                      }
+                      return null;
+                    },
+                    controller: _accommodationController,
+                    hintText: "e.g, Taj Hotel or Royal Hotels",
+                  ),
+                  const SizedBox(height: 10),
+                  // Bags
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.phone,
+                          color: AppColors.darkBlue, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Partners Phone Number",
+                        style: GoogleFonts.ptSerif(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkBlue),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  ElevatedButton(
+                    onPressed: contacts,
+                    child: const Text("Add Contacts"),
+                  ),
+
+                  if (_isSelectedContacts.isNotEmpty)
+                    Column(
+                      children: _isSelectedContacts.map((contact) {
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          elevation: 4,
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blueAccent,
+                              child: Icon(
+                                Icons.person,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          title: Text(
-                            contact.displayName ?? 'Unknown',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                            title: Text(
+                              contact.displayName ?? 'Unknown',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
                             ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: contact.phones!.map((phone) {
-                              return Text(
-                                phone.value ?? 'No phone number',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey[600],
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-
-                const SizedBox(height: 10),
-                // Budget
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.money_dollar,
-                        color: AppColors.darkBlue, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Budget",
-                      style: GoogleFonts.ptSerif(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.darkBlue),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _amountTotal,
-                  decoration: InputDecoration(
-                    hintText: "e.g., 2000",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                // Image Picker
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.photo,
-                        color: AppColors.darkBlue, size: 20),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Photos",
-                      style: GoogleFonts.ptSerif(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.darkBlue),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: _pickImages,
-                      child: Text('Add Photos'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                // Display picked images
-                if (_imageFiles.isNotEmpty)
-                  SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _imageFiles.length,
-                      itemBuilder: (context, index) {
-                        final imageFile = _imageFiles[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Image.file(
-                            File(imageFile.path),
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: contact.phones!.map((phone) {
+                                return Text(
+                                  phone.value ?? 'No phone number',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         );
-                      },
+                      }).toList(),
                     ),
+
+                  const SizedBox(height: 10),
+                  // Budget
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.money_dollar,
+                          color: AppColors.darkBlue, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Budget",
+                        style: GoogleFonts.ptSerif(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkBlue),
+                      ),
+                    ],
                   ),
-                const SizedBox(height: 10),
-                Custome_Button(
-                  onpresed: () {
-                    final List<Map<String, String>> selectedContacts =
-                        _isSelectedContacts.map((contact) {
-                      final String name = contact.displayName ?? "UnKnown";
-                      final String phoneNumber = contact.phones!.isNotEmpty
-                          ? contact.phones!.first.value ?? "No phone Number"
-                          : "No phone Number";
-                      return {
-                        'name': name,
-                        'phone': phoneNumber,
-                      };
-                    }).toList();
-                    final DateTime? startDate =
-                        DateTime.tryParse(_startDateController.text);
-                    final DateTime? endDate =
-                        DateTime.tryParse(_endDateController.text);
+                  const SizedBox(height: 10),
+                  AddTripForm(
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      bool isNumeric(String value) {
+                        final RegExp numericRegExp = RegExp(r'^\d+$');
+                        return numericRegExp.hasMatch(value);
+                      }
 
-                    if (startDate != null &&
-                        endDate != null &&
-                        startDate.isBefore(endDate)) {
-                      final addNewTrip = TripModel(
-                        contacts: selectedContacts,
-                        tripName: _tripNameController.text,
-                        startDate: startDate,
-                        endDate: endDate,
-                        travelersCount:
-                            int.tryParse(_travelersController.text) ?? 0,
-                        accommodation: _accommodationController.text,
-                        budget: double.tryParse(_amountTotal.text) ?? 0.0,
-                        photoPaths: _imageFiles
-                            .map((imageFile) => imageFile.path)
-                            .toList(),
-                      );
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a budget';
+                      } else if (!isNumeric(value)) {
+                        return 'Please enter a valid budget (numeric value)';
+                      } else if (double.parse(value) <= 0) {
+                        return 'budget must be graterthan Zero';
+                      }
+                      return null;
+                    },
+                    controller: _amountTotal,
+                    hintText: "e.g, ₹4000",
+                  ),
+                  const SizedBox(height: 10),
+                  // Image Picker
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.photo,
+                          color: AppColors.darkBlue, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Photos",
+                        style: GoogleFonts.ptSerif(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkBlue),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: _pickImages,
+                        child: Text('Add Photos'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Display picked images
+                  if (_imageFiles.isNotEmpty)
+                    SizedBox(
+                      height: 100,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _imageFiles.length,
+                        itemBuilder: (context, index) {
+                          final imageFile = _imageFiles[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Image.file(
+                              File(imageFile.path),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  Custome_Button(
+                    onpresed: () {
+                      if (_formKey.currentState!.validate()) {
+                        if (_imageFiles.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Please add at least one image for the trip')),
+                          );
+                          return;
+                        }
 
-                      addTrip(addNewTrip);
+                        final List<Map<String, String>> selectedContacts =
+                            _isSelectedContacts.map((contact) {
+                          final String name = contact.displayName ?? "Unknown";
+                          final String phoneNumber = contact.phones!.isNotEmpty
+                              ? contact.phones!.first.value ?? "No phone Number"
+                              : "No phone Number";
+                          return {
+                            'name': name,
+                            'phone': phoneNumber,
+                          };
+                        }).toList();
 
-                      Navigator.pop(context); // Close the screen
-                    } else {
-                      // Handle invalid date input
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content:
-                                Text('Please enter valid start and end dates')),
-                      );
-                    }
-                  },
-                  text: "Create Trip",
-                  height: 50,
-                ),
+                        final DateTime? startDate =
+                            DateTime.tryParse(_startDateController.text);
+                        final DateTime? endDate =
+                            DateTime.tryParse(_endDateController.text);
 
-                const SizedBox(height: 10),
-              ],
+                        if (startDate != null &&
+                            endDate != null &&
+                            startDate.isBefore(endDate)) {
+                          final addNewTrip = TripModel(
+                            contacts: selectedContacts,
+                            tripName: _tripNameController.text.trim(),
+                            startDate: startDate,
+                            endDate: endDate,
+                            travelersCount: int.tryParse(
+                                    _travelersController.text.trim()) ??
+                                0,
+                            accommodation: _accommodationController.text.trim(),
+                            budget: double.tryParse(_amountTotal.text) ?? 0.0,
+                            photoPaths: _imageFiles
+                                .map((imageFile) => imageFile.path)
+                                .toList(),
+                          );
+
+                          addTrip(addNewTrip);
+                          Navigator.pop(context); // Close the screen
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Please enter valid start and end dates')),
+                          );
+                        }
+                      }
+                    },
+                    text: "Create Trip",
+                    height: 50,
+                  ),
+
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),
