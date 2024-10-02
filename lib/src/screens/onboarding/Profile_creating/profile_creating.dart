@@ -130,16 +130,32 @@ class _ProfileCreateScreenState extends State<ProfileCreateScreen> {
                     height: 40,
                     text: "Continue",
                     onpresed: () async {
-                      final userdata = Usermodel(
+                      // Check if form is valid
+                      if (_formKey.currentState!.validate()) {
+                        if (imagePath == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Please select a profile image."),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        final userdata = Usermodel(
                           username: usernameController.text,
                           password: passwordController.text,
-                          profileImagePath: imagePath!);
+                          profileImagePath: imagePath!,
+                        );
 
-                      await addUser(userdata);
-                      Navigator.pushReplacement(
+                        await addUser(userdata);
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => HomeScreen()));
+                            builder: (context) => const HomeScreen(),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ],
