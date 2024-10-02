@@ -86,14 +86,6 @@ class _NoteWidgetsState extends State<NoteWidgets> {
                   return;
                 }
 
-                // Validate time logic
-                if (!toTime.isBefore(fromTime)) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("To time must be after From time.")),
-                  );
-                  return; // Prevent saving if validation fails
-                }
-
                 final data = DayPlanModel(
                   transportaion: _transportationController.text,
                   formTime: fromTime,
@@ -131,6 +123,7 @@ class _NoteWidgetsState extends State<NoteWidgets> {
               SizedBox(height: 20),
               // Activity input field
               Custome_TextFieldd(
+                keyboardType: TextInputType.multiline,
                 validator: (value) {
                   bool isAlphabetic(String value) {
                     final RegExp alphabeticRegExp = RegExp(r'^[a-zA-Z\s]+$');
@@ -156,6 +149,7 @@ class _NoteWidgetsState extends State<NoteWidgets> {
               const SizedBox(height: 20),
 
               Custome_TextFieldd(
+                keyboardType: TextInputType.multiline,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return "Description is required";
@@ -174,6 +168,7 @@ class _NoteWidgetsState extends State<NoteWidgets> {
                 children: [
                   Expanded(
                     child: Custome_TextFieldd(
+                      keyboardType: TextInputType.none,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return "From time is required";
@@ -189,6 +184,7 @@ class _NoteWidgetsState extends State<NoteWidgets> {
                   const SizedBox(width: 10), // Add space between fields
                   Expanded(
                     child: Custome_TextFieldd(
+                      keyboardType: TextInputType.none,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return "To time is required";
@@ -205,6 +201,7 @@ class _NoteWidgetsState extends State<NoteWidgets> {
               ),
               const SizedBox(height: 20),
               Custome_TextFieldd(
+                keyboardType: TextInputType.name,
                 validator: (value) {
                   bool isAlphabetic(String value) {
                     final RegExp alphabeticRegExp = RegExp(r'^[a-zA-Z\s]+$');

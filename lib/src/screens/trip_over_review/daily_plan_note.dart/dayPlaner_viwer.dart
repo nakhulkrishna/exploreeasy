@@ -8,11 +8,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 
 class DayplanerViwer extends StatefulWidget {
-  final TripModel tripdata;
-  final int index;
-
   const DayplanerViwer(
       {super.key, required this.tripdata, required this.index});
+
+  final int index;
+  final TripModel tripdata;
 
   @override
   State<DayplanerViwer> createState() => _DayplanerViwerState();
@@ -113,7 +113,8 @@ class _DayplanerViwerState extends State<DayplanerViwer> {
                             ),
                             IconButton(
                               onPressed: () {
-                                deletePlans(dayPlan.id);
+                                deletePlans(
+                                    dayPlan.id, index, widget.tripdata.id);
                               },
                               icon: Icon(CupertinoIcons.delete),
                             ), // Add an icon if needed

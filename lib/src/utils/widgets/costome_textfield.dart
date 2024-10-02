@@ -8,6 +8,7 @@ class Custome_TextFieldd extends StatelessWidget {
   final VoidCallback? onTap;
   final String? Function(String?)? validator;
   final TextEditingController controller;
+  final TextInputType keyboardType;
 
   const Custome_TextFieldd({
     super.key,
@@ -16,11 +17,13 @@ class Custome_TextFieldd extends StatelessWidget {
     this.onTap,
     required this.controller,
     required this.validator,
+    required this.keyboardType,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      keyboardType: keyboardType,
       validator: validator,
       controller: controller,
       onTap: onTap,

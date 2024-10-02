@@ -43,7 +43,8 @@ Future<void> getPlans(String tripId, int indexOfDay) async {
   plansListNotifier.notifyListeners();
 }
 
-Future<void> deletePlans(String DayplanId) async {
+Future<void> deletePlans(
+    String DayplanId, int indexOfDay, String tripId) async {
   final dailyPlanDB = await Hive.openBox("DailyPlan_DB");
 
   // Log current keys before checking
@@ -56,6 +57,8 @@ Future<void> deletePlans(String DayplanId) async {
   if (exists) {
     await dailyPlanDB.delete(DayplanId);
     log('Deleted Daily Plan with ID: $DayplanId', name: 'Daily Plan Logger');
+
+    await getPlans(tripId, indexOfDay);
   } else {
     log('No Daily Plan found with ID: $DayplanId', name: 'Daily Plan Logger');
   }
