@@ -7,7 +7,7 @@ Future<void> addUser(Usermodel value) async {
   final userDB = await Hive.openBox<Usermodel>('user_db');
   await userDB.put('profile', value);
 
-  log(" user name: ${value.username} password : ${value.password}");
+  log(" user name: ${value.username} password : ${value.password} image : ${value.profileImagePath} webImage :  ${value.webImageBytes}");
 }
 
 Future<Usermodel?> gettUser() async {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 part 'TripModel.g.dart';
@@ -34,7 +35,11 @@ class TripModel {
   @HiveField(9)
   bool completed;
 
+  @HiveField(10)
+  @HiveField(3)
+  final Uint8List? TripwebImageBytes; // Bytes for web
   TripModel({
+    required this.TripwebImageBytes,
     required this.contacts,
     required this.photoPaths,
     required this.tripName,

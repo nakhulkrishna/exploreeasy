@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -10,6 +11,7 @@ import 'package:exploreesy/src/screens/trip_over_review/daily_plan_note.dart/dai
 import 'package:exploreesy/src/utils/colors.dart';
 import 'package:exploreesy/src/utils/widgets/showmodelsheeet.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_text/flutter_expandable_text.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -142,20 +144,22 @@ class _TripOvereviewScreenState extends State<TripOvereviewScreen> {
                 builder: (BuildContext context) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      File(imageUrl),
-                      fit: BoxFit.contain,
-                      width: double.infinity,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Center(
-                          child: Icon(
-                            Icons.broken_image,
-                            size: 100,
-                            color: Colors.red,
+                    child: kIsWeb
+                        ? Image.memory(base64Decode(imageUrl))
+                        : Image.file(
+                            File(imageUrl),
+                            fit: BoxFit.contain,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  size: 100,
+                                  color: Colors.red,
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   );
                 },
               );

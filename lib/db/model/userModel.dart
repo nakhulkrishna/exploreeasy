@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 part 'userModel.g.dart';
 
@@ -12,8 +13,11 @@ class Usermodel {
   @HiveField(2)
   final String profileImagePath;
 
+  @HiveField(3)
+  final Uint8List? webImageBytes; // Bytes for web
   Usermodel(
       {required this.username,
       required this.password,
+      required this.webImageBytes,
       required this.profileImagePath});
 }

@@ -1,6 +1,7 @@
 import 'package:exploreesy/src/screens/home_screen/home_screen.dart';
 import 'package:exploreesy/src/screens/onboarding/onborading.dart';
 import 'package:exploreesy/src/utils/colors.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -39,6 +40,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine height for image based on platform
+    double imageHeight = kIsWeb ? 400 : 500; // Web gets smaller height
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -49,12 +53,17 @@ class _SplashScreenState extends State<SplashScreen> {
               "ExploreEase",
               style: GoogleFonts.ptSerif(fontSize: 36),
             ),
-            Image.asset("assets/images/travelers-concept-illustration.png"),
-            SizedBox(
+            Image.asset(
+              "assets/images/travelers-concept-illustration.png",
+              height: imageHeight, // Use the platform-dependent height
+            ),
+            const SizedBox(
               height: 80,
             ),
             LoadingAnimationWidget.discreteCircle(
-                color: AppColors.darkRed, size: 15)
+              color: AppColors.darkRed,
+              size: 15,
+            )
           ],
         ),
       ),

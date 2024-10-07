@@ -19,6 +19,7 @@ class UsermodelAdapter extends TypeAdapter<Usermodel> {
     return Usermodel(
       username: fields[0] as String,
       password: fields[1] as String,
+      webImageBytes: fields[3] as Uint8List?,
       profileImagePath: fields[2] as String,
     );
   }
@@ -26,13 +27,15 @@ class UsermodelAdapter extends TypeAdapter<Usermodel> {
   @override
   void write(BinaryWriter writer, Usermodel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.username)
       ..writeByte(1)
       ..write(obj.password)
       ..writeByte(2)
-      ..write(obj.profileImagePath);
+      ..write(obj.profileImagePath)
+      ..writeByte(3)
+      ..write(obj.webImageBytes);
   }
 
   @override

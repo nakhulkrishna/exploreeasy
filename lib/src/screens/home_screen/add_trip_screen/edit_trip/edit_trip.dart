@@ -7,6 +7,7 @@ import 'package:exploreesy/src/utils/colors.dart';
 import 'package:exploreesy/src/utils/widgets/custome_button.dart';
 import 'package:exploreesy/src/utils/widgets/edit_trip_form.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -31,7 +32,8 @@ class _EditingScreenState extends State<EditingScreen> {
   final TextEditingController _accommodationController =
       TextEditingController();
   final List<XFile> _imageFiles = []; // List to store selected images
-  final ImagePicker _picker = ImagePicker();
+  Uint8List? webImage;
+  final ImagePicker picker = ImagePicker();
   final GlobalKey<FormState> _EditformKey = GlobalKey<FormState>();
   final List<Contact> _isSelectedContacts = [];
 
@@ -52,13 +54,28 @@ class _EditingScreenState extends State<EditingScreen> {
     _imageFiles.addAll(widget.tripdata.photoPaths.map((path) => XFile(path)));
   }
 
-  // Function to pick images
   Future<void> _pickImages() async {
-    final List<XFile>? pickedFiles = await _picker.pickMultiImage();
-    if (pickedFiles != null) {
-      setState(() {
-        _imageFiles.addAll(pickedFiles);
-      });
+    if (kIsWeb) {
+      // Web image picking - multiple images
+      final List<XFile>? pickedFiles = await picker.pickMultiImage();
+      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+        for (var pickedFile in pickedFiles) {
+          final bytes = await pickedFile.readAsBytes();
+          setState(() {
+            _imageFiles.add(pickedFile); // Store the XFile object in the list
+            // You can store web image bytes here if needed for other purposes
+            // webImage = bytes;
+          });
+        }
+      }
+    } else {
+      // Mobile image picking - multiple images
+      final List<XFile>? pickedFiles = await picker.pickMultiImage();
+      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+        setState(() {
+          _imageFiles.addAll(pickedFiles); // Add all picked files to the list
+        });
+      }
     }
   }
 
@@ -459,6 +476,7 @@ class _EditingScreenState extends State<EditingScreen> {
 
                         // Create updated trip with merged contacts
                         final updatedTrip = TripModel(
+                          TripwebImageBytes: webImage,
                           id: widget.tripdata.id,
                           tripName: _tripNameController.text.trim(),
                           startDate: DateTime.parse(_startDateController.text),

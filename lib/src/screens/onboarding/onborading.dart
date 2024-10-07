@@ -135,7 +135,10 @@ class OnBoarding extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Spacer(),
-          Image.asset(images),
+          Image.asset(
+            images,
+            height: 500,
+          ),
           const Spacer(),
           Text(
             text,

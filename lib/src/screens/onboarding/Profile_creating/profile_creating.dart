@@ -4,6 +4,7 @@ import 'package:exploreesy/db/model/userModel.dart';
 import 'package:exploreesy/src/screens/home_screen/home_screen.dart';
 import 'package:exploreesy/src/utils/widgets/custome_button.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,6 +22,7 @@ class _ProfileCreateScreenState extends State<ProfileCreateScreen> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   String? imagePath;
+  Uint8List? webImage;
   final ImagePicker picker = ImagePicker();
 
   @override
@@ -61,12 +63,26 @@ class _ProfileCreateScreenState extends State<ProfileCreateScreen> {
   }
 
   Future<void> _pickImage() async {
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        imagePath = pickedFile.path;
-      });
+    if (kIsWeb) {
+      // Web image picking
+      final XFile? pickedFile =
+          await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          webImage = bytes; // Store image bytes for web
+          imagePath = pickedFile.path; // Still keeping the path for web
+        });
+      }
+    } else {
+      // Mobile image picking
+      final XFile? pickedFile =
+          await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          imagePath = pickedFile.path;
+        });
+      }
     }
   }
 
@@ -94,9 +110,11 @@ class _ProfileCreateScreenState extends State<ProfileCreateScreen> {
                     onTap: _pickImage,
                     child: CircleAvatar(
                       radius: 60,
-                      backgroundImage: imagePath != null
-                          ? FileImage(File(imagePath!))
-                          : null, // Display picked image
+                      backgroundImage: kIsWeb && webImage != null
+                          ? MemoryImage(webImage!)
+                          : imagePath != null
+                              ? FileImage(File(imagePath!))
+                              : null, // Display picked image for mobile or web
                       child: imagePath == null
                           ? const Icon(CupertinoIcons.camera, size: 50)
                           : null, // Show camera icon if no image is picked
@@ -143,9 +161,11 @@ class _ProfileCreateScreenState extends State<ProfileCreateScreen> {
                         }
 
                         final userdata = Usermodel(
+                          webImageBytes: webImage,
                           username: usernameController.text,
                           password: passwordController.text,
-                          profileImagePath: imagePath!,
+                          profileImagePath:
+                              imagePath!, // Save path (works for mobile, for web save different logic if needed)
                         );
 
                         await addUser(userdata);

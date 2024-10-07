@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:contacts_service/contacts_service.dart';
@@ -6,6 +8,7 @@ import 'package:exploreesy/db/model/TripModel.dart';
 import 'package:exploreesy/src/utils/colors.dart';
 import 'package:exploreesy/src/utils/widgets/addtripForm.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,18 +37,28 @@ class _AddTripScreenState extends State<AddTripScreen> {
       TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final List<XFile> _imageFiles = []; // List to store selected images
-
-  final ImagePicker _picker = ImagePicker();
+  final List<String> _imageFiles = []; // List to store selected images
+  Uint8List? webImage;
+  final ImagePicker picker = ImagePicker();
   final List<Contact> _isSelectedContacts = [];
-  // Function to pick images
+
   Future<void> _pickImages() async {
-    final List<XFile>? pickedFiles = await _picker.pickMultiImage();
-    if (pickedFiles != null) {
-      setState(() {
-        _imageFiles.addAll(pickedFiles);
-      });
+    final List<XFile> pickedImage = await picker.pickMultiImage();
+
+    if (kIsWeb) {
+      for (var picked in pickedImage) {
+       git add webImage = await picked.readAsBytes();
+
+        final image = base64Encode(webImage!.toList());
+        _imageFiles.add(image);
+      }
+    } else {
+      for (var pickedpic in pickedImage) {
+        _imageFiles.add(pickedpic.path);
+      }
     }
+
+    setState(() {});
   }
 
   Future<void> contacts() async {
@@ -453,12 +466,19 @@ class _AddTripScreenState extends State<AddTripScreen> {
                           final imageFile = _imageFiles[index];
                           return Padding(
                             padding: const EdgeInsets.only(right: 8.0),
-                            child: Image.file(
-                              File(imageFile.path),
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                            ),
+                            child: kIsWeb
+                                ? Image.memory(
+                                    base64Decode(imageFile),
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    File(imageFile),
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  ),
                           );
                         },
                       ),
@@ -497,6 +517,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                             endDate != null &&
                             startDate.isBefore(endDate)) {
                           final addNewTrip = TripModel(
+                            TripwebImageBytes: webImage,
                             contacts: selectedContacts,
                             tripName: _tripNameController.text.trim(),
                             startDate: startDate,
@@ -507,7 +528,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                             accommodation: _accommodationController.text.trim(),
                             budget: double.tryParse(_amountTotal.text) ?? 0.0,
                             photoPaths: _imageFiles
-                                .map((imageFile) => imageFile.path)
+                                .map((imageFile) => imageFile)
                                 .toList(),
                           );
 

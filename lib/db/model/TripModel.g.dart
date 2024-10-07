@@ -17,6 +17,7 @@ class TripModelAdapter extends TypeAdapter<TripModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TripModel(
+      TripwebImageBytes: fields[10] as Uint8List?,
       contacts: (fields[5] as List)
           .map((dynamic e) => (e as Map).cast<String, String>())
           .toList(),
@@ -35,7 +36,7 @@ class TripModelAdapter extends TypeAdapter<TripModel> {
   @override
   void write(BinaryWriter writer, TripModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.tripName)
       ..writeByte(1)
@@ -55,7 +56,9 @@ class TripModelAdapter extends TypeAdapter<TripModel> {
       ..writeByte(8)
       ..write(obj.id)
       ..writeByte(9)
-      ..write(obj.completed);
+      ..write(obj.completed)
+      ..writeByte(10)
+      ..write(obj.TripwebImageBytes);
   }
 
   @override
