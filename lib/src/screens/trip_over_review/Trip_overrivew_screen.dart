@@ -111,7 +111,7 @@ class _TripOvereviewScreenState extends State<TripOvereviewScreen> {
                         trip: widget.tripModel,
                       )));
             },
-            icon: const Icon(Icons.timeline),
+            icon: const Icon(Icons.note_alt_outlined),
           ),
           IconButton(
             onPressed: () {

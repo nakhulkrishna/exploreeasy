@@ -30,14 +30,13 @@ class PrivacyScreen extends StatelessWidget {
             ),
             const Text(
               '1. Information Collection\n'
-              '- We collect personal information such as your name, email address, and profile image.\n'
-              '- Usage data is also collected automatically, including your IP address and interaction with the app.\n',
+              '- We never collect personal information such as your credit, email address, and and personal information.\n'
+              '- data never collected by automatically, including your IP address and interaction with the app.\n',
               style: TextStyle(fontSize: 16),
             ),
             const Text(
               '2. Use of Information\n'
-              '- We use the information collected to provide, maintain, and improve our services.\n'
-              '- Your information helps us to personalize your experience and communicate with you effectively.\n',
+              '- We never use the information collected to provide, maintain, and improve our services.\n',
               style: TextStyle(fontSize: 16),
             ),
             const Text(

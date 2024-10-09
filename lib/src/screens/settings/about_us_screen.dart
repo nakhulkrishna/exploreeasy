@@ -43,8 +43,8 @@ class AboutUsScreen extends StatelessWidget {
             const Text(
               '3. Contact Us\n'
               '- If you have any questions, feedback, or concerns, please reach out to us:\n'
-              '- Email: [Insert Contact Information]\n'
-              '- Follow us on social media: [Insert Social Media Links]\n',
+              '- Email: exploreEasy2024@gmail.com\n'
+              '- Follow us on social media: https://www.linkedin.com/in/nakhul-krishna-61a472309?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app\n',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),

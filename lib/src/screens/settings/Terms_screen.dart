@@ -56,7 +56,7 @@ class TermsAndServices extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'If you have any questions about these Terms and Services, please contact us at: [Insert Contact Information]',
+              'If you have any questions about these Terms and Services, please contact us at: exploreeasy2024@gmail.com',
               style: TextStyle(fontSize: 16),
             ),
           ],

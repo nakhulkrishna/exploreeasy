@@ -35,8 +35,7 @@ class HelpScreen extends StatelessWidget {
             const Text(
               '2. Contact Us\n'
               '- If you have any further questions or need assistance, please contact our support team:\n'
-              '- Email: [Insert Contact Information]\n'
-              '- Phone: [Insert Phone Number]\n',
+              '- Email: exploreeasy2024@gmial.com\n',
               style: TextStyle(fontSize: 16),
             ),
             const Text(

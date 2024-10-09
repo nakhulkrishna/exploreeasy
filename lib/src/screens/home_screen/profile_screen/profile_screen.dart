@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:exploreesy/db/db_servies/user_db_servies.dart';
 import 'package:exploreesy/db/model/TripModel.dart';
@@ -9,6 +10,7 @@ import 'package:exploreesy/src/screens/settings/privacy_screen.dart';
 import 'package:exploreesy/src/utils/widgets/ettings_container.dart';
 import 'package:exploreesy/src/screens/onboarding/Profile_creating/profile_creating.dart'; // Onboarding screen
 import 'package:exploreesy/src/utils/widgets/custome_button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -35,14 +37,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void loaduser() async {
     userdata = await gettUser();
     setState(() {});
-  }
-
-  void deleteImage(int index) {
-    setState(() {
-      // Assuming you update your list of memories in the database here
-      // Add logic to delete from the actual Hive storage
-      // Example: remove memory from UserMemoriesNotifier or Hive
-    });
   }
 
   Future<void> _logout() async {
@@ -107,9 +101,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                       radius: 50,
-                      backgroundImage: userdata != null
-                          ? MemoryImage(userdata!.webImageBytes!)
-                          : const AssetImage("assets/images/profile.png")),
+                      backgroundImage: kIsWeb
+                          ? MemoryImage(
+                              base64Decode(userdata!.profileImagePath))
+                          : FileImage(File(userdata!.profileImagePath))),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

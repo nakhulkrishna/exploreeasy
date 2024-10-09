@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:exploreesy/db/db_servies/user_db_servies.dart';
 import 'package:exploreesy/db/model/userModel.dart';
@@ -63,26 +64,12 @@ class _ProfileCreateScreenState extends State<ProfileCreateScreen> {
   }
 
   Future<void> _pickImage() async {
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
     if (kIsWeb) {
-      // Web image picking
-      final XFile? pickedFile =
-          await picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        final bytes = await pickedFile.readAsBytes();
-        setState(() {
-          webImage = bytes; // Store image bytes for web
-          imagePath = pickedFile.path; // Still keeping the path for web
-        });
-      }
+      webImage = await pickedImage!.readAsBytes();
+      imagePath = base64Encode(webImage!);
     } else {
-      // Mobile image picking
-      final XFile? pickedFile =
-          await picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        setState(() {
-          imagePath = pickedFile.path;
-        });
-      }
+      imagePath = pickedImage!.path;
     }
   }
 
