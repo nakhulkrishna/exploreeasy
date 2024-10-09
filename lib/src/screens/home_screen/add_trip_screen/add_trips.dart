@@ -47,7 +47,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
 
     if (kIsWeb) {
       for (var picked in pickedImage) {
-       git add webImage = await picked.readAsBytes();
+        webImage = await picked.readAsBytes();
 
         final image = base64Encode(webImage!.toList());
         _imageFiles.add(image);

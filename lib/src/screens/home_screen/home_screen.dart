@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           NavigationDestination(
             icon: Icon(Icons.map),
-            label: "Recent Trip",
+            label: "UpComing Trip",
           ),
           NavigationDestination(
             icon: Icon(Icons.check),
